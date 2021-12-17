@@ -1,10 +1,10 @@
 {
-    "name": "XXXX",
-    "keywords": "XXXX, SensESP, Signal K, marine, boat, sensor, hardware, embedded, device",
-    "description": "XXXX device support for the SensESP sensor framework",
+    "name": "OneWire",
+    "keywords": "OneWire, SensESP, Signal K, marine, boat, sensor, hardware, embedded, device",
+    "description": "OneWire temperature device support for the SensESP sensor framework",
     "repository": {
         "type": "git",
-        "url": "https://github.com/SensESP/XXXX.git"
+        "url": "https://github.com/SensESP/OneWire.git"
     },
     "authors": [
         {
@@ -20,10 +20,14 @@
     ],
     "dependencies": [
         {
-            "name": "XXXXYYYY",
-            "owner": "ZZZZ",
-            "version": "^VVVVV"
+            "name": "OneWireNg",
+            "owner": "pstolarz",
+            "version": "^0.10.0"
         },
+        {
+            "name": "DallasTemperature",
+            "version": "https://github.com/pstolarz/Arduino-Temperature-Control-Library"
+        },      
         {
             "name": "SensESP",
             "owner": "SignalK",

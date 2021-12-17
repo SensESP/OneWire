@@ -1,4 +1,4 @@
-name: XXXX Automatic Build
+name: OneWire Temperature Automatic Build
 
 on: [push, pull_request]
 
@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         example:
-          - examples/XXXX.cpp
+          - examples/onewire_temperature_example.cpp
         target_device:
           - esp32dev
     steps:
