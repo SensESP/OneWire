@@ -1,11 +1,13 @@
-#ifndef _onewire_H_
-#define _onewire_H_
+#ifndef _SENSESP_SENSORS_ONEWIRE_H_
+#define _SENSESP_SENSORS_ONEWIRE_H_
 
 #include <set>
 
 #include <DallasTemperature.h>
 
-#include "sensor.h"
+#include "sensors/sensor.h"
+
+namespace sensesp {
 
 typedef std::array<uint8_t, 8> OWDevAddr;
 
@@ -27,7 +29,7 @@ typedef std::array<uint8_t, 8> OWDevAddr;
 class DallasTemperatureSensors : public Sensor {
  public:
   DallasTemperatureSensors(int pin, String config_path="");
-  void enable() override final {}
+  void start() override final {}
   bool register_address(const OWDevAddr& addr);
   bool get_next_address(OWDevAddr* addr);
   DallasTemperature* sensors_;
@@ -64,11 +66,11 @@ class DallasTemperatureSensors : public Sensor {
  * 
  * @param config_path The path to configure the sensor address in the Config UI.
  **/ 
-class OneWireTemperature : public NumericSensor {
+class OneWireTemperature : public FloatSensor {
  public:
   OneWireTemperature(DallasTemperatureSensors* dts, uint read_delay = 1000,
                      String config_path="");
-  void enable() override final;
+  void start() override final;
   virtual void get_configuration(JsonObject& doc) override final;
   virtual bool set_configuration(const JsonObject& config) override final;
   virtual String get_config_schema() override;
@@ -82,5 +84,7 @@ class OneWireTemperature : public NumericSensor {
   void update();
   void read_value();
 };
+
+} // namespace sensesp
 
 #endif

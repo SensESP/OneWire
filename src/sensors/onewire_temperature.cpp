@@ -4,8 +4,7 @@
 
 #include <algorithm>
 
-#include "sensesp.h"
-#include "sensor.h"
+namespace sensesp {
 
 const OWDevAddr null_ow_addr = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -91,7 +90,7 @@ bool DallasTemperatureSensors::get_next_address(OWDevAddr* addr) {
 
 OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
                                        uint read_delay, String config_path)
-    : NumericSensor(config_path), dts_{dts}, read_delay_{read_delay} {
+    : FloatSensor(config_path), dts_{dts}, read_delay_{read_delay} {
   load_configuration();
   if (address_ == null_ow_addr) {
     // previously unconfigured sensor
@@ -121,20 +120,20 @@ OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
   }
 }
 
-void OneWireTemperature::enable() {
+void OneWireTemperature::start() {
   if (found_) {
     // read_delay must be at least a little longer than conversion_delay
     if (read_delay_ < conversion_delay_ + 50) {
       read_delay_ = conversion_delay_ + 50;
     }
-    app.onRepeat(read_delay_, [this]() { this->update(); });
+    ReactESP::app->onRepeat(read_delay_, [this]() { this->update(); });
   }
 }
 
 void OneWireTemperature::update() {
   dts_->sensors_->requestTemperaturesByAddress(address_.data());
   // temp converstion can take up to 750 ms, so wait before reading
-  app.onDelay(conversion_delay_, [this]() { this->read_value(); });
+  ReactESP::app->onDelay(conversion_delay_, [this]() { this->read_value(); });
 }
 
 void OneWireTemperature::read_value() {
@@ -175,3 +174,5 @@ bool OneWireTemperature::set_configuration(const JsonObject& config) {
   string_to_owda(&address_, config["address"]);
   return true;
 }
+
+} // namespace sensesp
