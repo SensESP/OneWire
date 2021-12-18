@@ -1,7 +1,7 @@
+#include "sensesp/signalk/signalk_output.h"
+#include "sensesp/transforms/linear.h"
 #include "sensesp_app_builder.h"
-#include "sensors/onewire_temperature.h"
-#include "signalk/signalk_output.h"
-#include "transforms/linear.h"
+#include "sensesp_onewire/onewire_temperature.h"
 
 using namespace sensesp;
 
@@ -45,18 +45,16 @@ void setup() {
       new OneWireTemperature(dts, read_delay, "/coolantTemperature/oneWire");
 
   coolant_temp->connect_to(new Linear(1.0, 0.0, "/coolantTemperature/linear"))
-      ->connect_to(
-          new SKOutputFloat("propulsion.mainEngine.coolantTemperature",
-                             "/coolantTemperature/skPath"));
+      ->connect_to(new SKOutputFloat("propulsion.mainEngine.coolantTemperature",
+                                     "/coolantTemperature/skPath"));
 
   // Measure exhaust temperature
   auto* exhaust_temp =
       new OneWireTemperature(dts, read_delay, "/exhaustTemperature/oneWire");
 
   exhaust_temp->connect_to(new Linear(1.0, 0.0, "/exhaustTemperature/linear"))
-      ->connect_to(
-          new SKOutputFloat("propulsion.mainEngine.exhaustTemperature",
-                             "/exhaustTemperature/skPath"));
+      ->connect_to(new SKOutputFloat("propulsion.mainEngine.exhaustTemperature",
+                                     "/exhaustTemperature/skPath"));
 
   // Measure temperature of 24v alternator
   auto* alt_24v_temp =
@@ -64,7 +62,7 @@ void setup() {
 
   alt_24v_temp->connect_to(new Linear(1.0, 0.0, "/24vAltTemperature/linear"))
       ->connect_to(new SKOutputFloat("electrical.alternators.24V.temperature",
-                                      "/24vAltTemperature/skPath"));
+                                     "/24vAltTemperature/skPath"));
 
   // Measure temperature of 12v alternator
   auto* alt_12v_temp =
@@ -72,7 +70,7 @@ void setup() {
 
   alt_12v_temp->connect_to(new Linear(1.0, 0.0, "/12vAltTemperature/linear"))
       ->connect_to(new SKOutputFloat("electrical.alternators.12V.temperature",
-                                      "/12vAltTemperature/skPath"));
+                                     "/12vAltTemperature/skPath"));
 
   // Configuration is done, lets start the readings of the sensors!
   sensesp_app->start();
@@ -80,4 +78,3 @@ void setup() {
 
 // main program loop
 void loop() { app.tick(); }
-
