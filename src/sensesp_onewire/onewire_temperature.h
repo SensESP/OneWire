@@ -5,7 +5,7 @@
 
 #include <DallasTemperature.h>
 
-#include "sensors/sensor.h"
+#include "sensesp/sensors/sensor.h"
 
 namespace sensesp {
 
