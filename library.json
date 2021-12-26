@@ -21,13 +21,8 @@
     "dependencies": [
         {
             "name": "OneWireNg",
-            "owner": "pstolarz",
-            "version": "^0.10.0"
+            "version": "https://github.com/pstolarz/OneWireNg"
         },
-        {
-            "name": "DallasTemperature",
-            "version": "https://github.com/pstolarz/Arduino-Temperature-Control-Library"
-        },      
         {
             "name": "SensESP",
             "owner": "SignalK",
