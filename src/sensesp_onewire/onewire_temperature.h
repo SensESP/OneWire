@@ -3,7 +3,8 @@
 
 #include <set>
 
-#include <DallasTemperature.h>
+#include "OneWireNg.h"
+#include "drivers/DSTherm.h"
 
 #include "sensesp/sensors/sensor.h"
 
@@ -32,9 +33,9 @@ class DallasTemperatureSensors : public Sensor {
   void start() override final {}
   bool register_address(const OWDevAddr& addr);
   bool get_next_address(OWDevAddr* addr);
-  DallasTemperature* sensors_;
+  DSTherm get_dallas_driver() { return DSTherm{*onewire_}; }
  private:
-  OneWire* onewire_;
+  OneWireNg* onewire_;
   std::set<OWDevAddr> known_addresses_;
   std::set<OWDevAddr> registered_addresses_;
 };
@@ -77,7 +78,7 @@ class OneWireTemperature : public FloatSensor {
 
  private:
   DallasTemperatureSensors* dts_;
-  uint conversion_delay_ = 750;
+  uint conversion_delay_ = DSTherm::MAX_CONV_TIME;
   uint read_delay_;
   bool found_ = true;
   OWDevAddr address_ = {};
