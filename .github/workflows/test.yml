@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         example:
-          - examples/onewire_temperature_example.cpp
+          - examples/onewire_temperature/onewire_temperature_example.cpp
         target_device:
           - esp32dev
     steps:
