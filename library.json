@@ -21,7 +21,8 @@
     "dependencies": [
         {
             "name": "OneWireNg",
-            "version": "https://github.com/pstolarz/OneWireNg"
+            "owner": "pstolarz",
+            "version": "^0.10.1"
         },
         {
             "name": "SensESP",
