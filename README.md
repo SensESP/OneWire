@@ -11,6 +11,6 @@ To use the library in your own projects, you have to include it in your `platfor
         SignalK/SensESP@^2.0.0
         SensESP/OneWire@^2.0.0
 
-See also the [example main file](blob/main/examples/onewire_temperature_example.cpp).
+See also the [example main file](https://github.com/SensESP/OneWire/blob/main/examples/onewire_temperature/onewire_temperature_example.cpp).
 
 For more information on using SensESP and external add-on libraries, see the [SensESP documentation](https://signalk.org/SensESP/docs/).
