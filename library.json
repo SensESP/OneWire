@@ -27,10 +27,10 @@
         {
             "name": "SensESP",
             "owner": "SignalK",
-            "version": "^2.0.0"
+            "version": "^3.0.0-alpha"
         }
     ],
-    "version": "2.0.0",
+    "version": "3.0.0-dev1",
     "frameworks": "arduino",
     "platforms": "*"
 }

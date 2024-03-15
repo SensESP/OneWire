@@ -127,9 +127,7 @@ OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
       found_ = false;
     }
   }
-}
 
-void OneWireTemperature::start() {
   if (found_) {
     // read_delay must be at least a little longer than conversion_delay
     if (read_delay_ < conversion_delay_ + 50) {
