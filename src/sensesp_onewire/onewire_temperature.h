@@ -27,7 +27,7 @@ typedef std::array<uint8_t, 8> OWDevAddr;
  * @param config_path Currently not used for this class, don't provide
  * it - it defaults to a blank String.
  **/
-class DallasTemperatureSensors : public Sensor {
+class DallasTemperatureSensors : public Sensor<float> {
  public:
   DallasTemperatureSensors(int pin, String config_path="");
   bool register_address(const OWDevAddr& addr);
