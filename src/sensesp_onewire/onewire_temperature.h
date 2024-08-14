@@ -1,6 +1,8 @@
 #ifndef _SENSESP_SENSORS_ONEWIRE_H_
 #define _SENSESP_SENSORS_ONEWIRE_H_
 
+#include "sensesp.h"
+
 #include <set>
 
 #include "OneWireNg.h"
