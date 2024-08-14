@@ -22,7 +22,7 @@
         {
             "name": "OneWireNg",
             "owner": "pstolarz",
-            "version": "^0.10.1"
+            "version": "^0.13.2"
         },
         {
             "name": "SensESP",
