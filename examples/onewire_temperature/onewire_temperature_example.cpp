@@ -1,3 +1,5 @@
+#include "sensesp.h"
+
 #include "sensesp/signalk/signalk_output.h"
 #include "sensesp/transforms/linear.h"
 #include "sensesp_app_builder.h"
@@ -8,9 +10,7 @@ using namespace sensesp;
 ReactESP app;
 
 void setup() {
-#ifndef SERIAL_DEBUG_DISABLED
-  SetupSerialDebug(115200);
-#endif
+  SetupLogging();
 
   // Create the global SensESPApp() object.
   SensESPAppBuilder builder;
@@ -42,38 +42,39 @@ void setup() {
 
   // Measure coolant temperature
   auto* coolant_temp =
-      new OneWireTemperature(dts, read_delay, "/coolantTemperature/oneWire");
+      new OneWireTemperature(dts, read_delay, "/Coolant Temperature/OneWire");
 
-  coolant_temp->connect_to(new Linear(1.0, 0.0, "/coolantTemperature/linear"))
+  coolant_temp
+      ->connect_to(new Linear(1.0, 0.0, "/Coolant Temperature/Calibration"))
       ->connect_to(new SKOutputFloat("propulsion.mainEngine.coolantTemperature",
-                                     "/coolantTemperature/skPath"));
+                                     "/Coolant Temperature/SK Path"));
 
   // Measure exhaust temperature
   auto* exhaust_temp =
-      new OneWireTemperature(dts, read_delay, "/exhaustTemperature/oneWire");
+      new OneWireTemperature(dts, read_delay, "/Exhaust Temperature/OneWire");
 
-  exhaust_temp->connect_to(new Linear(1.0, 0.0, "/exhaustTemperature/linear"))
+  exhaust_temp
+      ->connect_to(new Linear(1.0, 0.0, "/Exhaust Temperature/Calibration"))
       ->connect_to(new SKOutputFloat("propulsion.mainEngine.exhaustTemperature",
-                                     "/exhaustTemperature/skPath"));
+                                     "/Exhaust Temperature/SK Path"));
 
   // Measure temperature of 24v alternator
   auto* alt_24v_temp =
-      new OneWireTemperature(dts, read_delay, "/24vAltTemperature/oneWire");
+      new OneWireTemperature(dts, read_delay, "/24V Alt Temperature/OneWire");
 
-  alt_24v_temp->connect_to(new Linear(1.0, 0.0, "/24vAltTemperature/linear"))
+  alt_24v_temp
+      ->connect_to(new Linear(1.0, 0.0, "/24V Alt Temperature/Calibration"))
       ->connect_to(new SKOutputFloat("electrical.alternators.24V.temperature",
-                                     "/24vAltTemperature/skPath"));
+                                     "/24V Alt Temperature/SK Path"));
 
   // Measure temperature of 12v alternator
   auto* alt_12v_temp =
-      new OneWireTemperature(dts, read_delay, "/12vAltTemperature/oneWire");
+      new OneWireTemperature(dts, read_delay, "/12V Alt Temperature/OneWire");
 
-  alt_12v_temp->connect_to(new Linear(1.0, 0.0, "/12vAltTemperature/linear"))
+  alt_12v_temp
+      ->connect_to(new Linear(1.0, 0.0, "/12V Alt Temperature/Calibration"))
       ->connect_to(new SKOutputFloat("electrical.alternators.12V.temperature",
-                                     "/12vAltTemperature/skPath"));
-
-  // Configuration is done, lets start the readings of the sensors!
-  sensesp_app->start();
+                                     "/12V Alt Temperature/SK Path"));
 }
 
 // main program loop

@@ -37,11 +37,11 @@ DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
   );
   DSTherm drv{*onewire_};
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
-    static_assert(CONFIG_MAX_SRCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
-        "OneWireNg config: CONFIG_MAX_SRCH_FILTERS too small");
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+    static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
+        "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS too small");
 #else
-# error "OneWireNg config: CONFIG_MAX_SRCH_FILTERS not defined"
+# error "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS not defined"
 #endif
 
   // in the process of 1-wire bus scan
@@ -127,9 +127,7 @@ OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
       found_ = false;
     }
   }
-}
 
-void OneWireTemperature::start() {
   if (found_) {
     // read_delay must be at least a little longer than conversion_delay
     if (read_delay_ < conversion_delay_ + 50) {
