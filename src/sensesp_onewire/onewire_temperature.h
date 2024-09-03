@@ -10,7 +10,7 @@
 
 #include "sensesp/sensors/sensor.h"
 
-namespace sensesp {
+namespace sensesp::onewire {
 
 typedef std::array<uint8_t, 8> OWDevAddr;
 
@@ -29,7 +29,7 @@ typedef std::array<uint8_t, 8> OWDevAddr;
  * @param config_path Currently not used for this class, don't provide
  * it - it defaults to a blank String.
  **/
-class DallasTemperatureSensors : public Sensor<float> {
+class DallasTemperatureSensors : public sensesp::Sensor<float> {
  public:
   DallasTemperatureSensors(int pin, String config_path="");
   bool register_address(const OWDevAddr& addr);
@@ -68,7 +68,7 @@ class DallasTemperatureSensors : public Sensor<float> {
  *
  * @param config_path The path to configure the sensor address in the Config UI.
  **/
-class OneWireTemperature : public FloatSensor {
+class OneWireTemperature : public sensesp::FloatSensor {
  public:
   OneWireTemperature(DallasTemperatureSensors* dts, uint read_delay = 1000,
                      String config_path="");
