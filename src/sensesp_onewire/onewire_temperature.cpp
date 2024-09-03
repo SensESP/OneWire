@@ -1,13 +1,13 @@
-#include <algorithm>
-
 #include "onewire_temperature.h"
+
+#include <algorithm>
 
 #include "OneWireNg_CurrentPlatform.h"
 #include "utils/Placeholder.h"
 
 #define DEVICE_DISCONNECTED_C -127
 
-namespace sensesp {
+namespace sensesp::onewire {
 
 const OWDevAddr null_ow_addr = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -31,17 +31,16 @@ bool string_to_owda(OWDevAddr* addr, const char* str) {
 
 DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
     : Sensor(config_path) {
-  onewire_ = new OneWireNg_CurrentPlatform(
-    pin,
-    false // disable internal pull-up
+  onewire_ = new OneWireNg_CurrentPlatform(pin,
+                                           false  // disable internal pull-up
   );
   DSTherm drv{*onewire_};
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
-    static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
-        "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS too small");
+  static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
+                "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS too small");
 #else
-# error "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS not defined"
+#error "OneWireNg config: CONFIG_MAX_SEARCH_FILTERS not defined"
 #endif
 
   // in the process of 1-wire bus scan
@@ -50,7 +49,7 @@ DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
 
   OWDevAddr owda;
 
-  for (const auto& addr: *onewire_) {
+  for (const auto& addr : *onewire_) {
     std::copy(std::begin(addr), std::end(addr), std::begin(owda));
     known_addresses_.insert(owda);
 #ifndef DEBUG_DISABLED
@@ -60,11 +59,8 @@ DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
 #endif
     // Set common max. resolution (12-bits) for all handled sensors.
     // The configuration will be valid until subsequent power cut-off.
-    drv.writeScratchpad(
-      addr,
-      0, 0, // disable alarm notifications
-      DSTherm::RES_12_BIT
-    );
+    drv.writeScratchpad(addr, 0, 0,  // disable alarm notifications
+                        DSTherm::RES_12_BIT);
   }
 }
 
@@ -99,7 +95,7 @@ bool DallasTemperatureSensors::get_next_address(OWDevAddr* addr) {
 
 OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
                                        uint read_delay, String config_path)
-    : FloatSensor(config_path), dts_{dts}, read_delay_{read_delay} {
+    : sensesp::FloatSensor(config_path), dts_{dts}, read_delay_{read_delay} {
   load_configuration();
   if (address_ == null_ow_addr) {
     // previously unconfigured sensor
@@ -133,18 +129,20 @@ OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
     if (read_delay_ < conversion_delay_ + 50) {
       read_delay_ = conversion_delay_ + 50;
     }
-    ReactESP::app->onRepeat(read_delay_, [this]() { this->update(); });
+    SensESPBaseApp::get_event_loop()->onRepeat(read_delay_,
+                                               [this]() { this->update(); });
   }
 }
 
 void OneWireTemperature::update() {
   dts_->get_dallas_driver().convertTemp(
-    *reinterpret_cast<OneWireNg::Id*>(address_.data()),
-    0 // don't wait for conversion
+      *reinterpret_cast<OneWireNg::Id*>(address_.data()),
+      0  // don't wait for conversion
   );
 
   // temp converstion can take up to 750 ms, so wait before reading
-  ReactESP::app->onDelay(conversion_delay_, [this]() { this->read_value(); });
+  SensESPBaseApp::get_event_loop()->onDelay(conversion_delay_,
+                                            [this]() { this->read_value(); });
 }
 
 void OneWireTemperature::read_value() {
@@ -152,9 +150,9 @@ void OneWireTemperature::read_value() {
   float tempC = DEVICE_DISCONNECTED_C;
 
   if (dts_->get_dallas_driver().readScratchpad(
-    *reinterpret_cast<OneWireNg::Id*>(address_.data()),
-    &scrpd) == OneWireNg::EC_SUCCESS) {
-      tempC = ((DSTherm::Scratchpad&)scrpd).getTemp() / 1000.0;
+          *reinterpret_cast<OneWireNg::Id*>(address_.data()), &scrpd) ==
+      OneWireNg::EC_SUCCESS) {
+    tempC = ((DSTherm::Scratchpad&)scrpd).getTemp() / 1000.0;
   }
 
   // we're on purpose ignoring the "conversion not ready" value (+85°C)
@@ -176,7 +174,7 @@ void OneWireTemperature::get_configuration(JsonObject& root) {
   root["found"] = found_;
 }
 
-static const char SCHEMA[] PROGMEM = R"({
+static const char SCHEMA[] = R"({
     "type": "object",
     "properties": {
         "address": { "title": "OneWire address", "type": "string" },
@@ -184,7 +182,7 @@ static const char SCHEMA[] PROGMEM = R"({
     }
   })";
 
-String OneWireTemperature::get_config_schema() { return FPSTR(SCHEMA); }
+String OneWireTemperature::get_config_schema() { return (SCHEMA); }
 
 bool OneWireTemperature::set_configuration(const JsonObject& config) {
   if (!config.containsKey("address")) {
@@ -194,4 +192,4 @@ bool OneWireTemperature::set_configuration(const JsonObject& config) {
   return true;
 }
 
-} // namespace sensesp
+}  // namespace sensesp::onewire

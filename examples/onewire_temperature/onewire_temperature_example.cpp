@@ -6,6 +6,7 @@
 #include "sensesp_onewire/onewire_temperature.h"
 
 using namespace sensesp;
+using namespace sensesp::onewire;
 
 ReactESP app;
 
