@@ -185,10 +185,11 @@ static const char SCHEMA[] = R"({
 String OneWireTemperature::get_config_schema() { return (SCHEMA); }
 
 bool OneWireTemperature::set_configuration(const JsonObject& config) {
-  if (!config.containsKey("address")) {
+  if (!config["address"].is<String>()) {
     return false;
   }
-  string_to_owda(&address_, config["address"]);
+  String address = config["address"];
+  string_to_owda(&address_, address.c_str());
   return true;
 }
 

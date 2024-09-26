@@ -8,8 +8,8 @@ OneWire temperature sensors such as the DS18B20 are simple and very inexpensive 
 To use the library in your own projects, you have to include it in your `platformio.ini` `lib_deps` section:
 
     lib_deps =
-        SignalK/SensESP@>=3.0.0-beta.1,<4.0.0-alpha.1
-        SensESP/OneWire@^3.0.0
+        SignalK/SensESP@>=3.0.0-beta.3,<4.0.0-alpha.1
+        SensESP/OneWire@^3.0.1
 
 See also the [example main file](https://github.com/SensESP/OneWire/blob/main/examples/onewire_temperature/onewire_temperature_example.cpp).
 
