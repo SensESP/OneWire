@@ -1,13 +1,11 @@
 #ifndef _SENSESP_SENSORS_ONEWIRE_H_
 #define _SENSESP_SENSORS_ONEWIRE_H_
 
-#include "sensesp.h"
-
 #include <set>
 
 #include "OneWireNg.h"
 #include "drivers/DSTherm.h"
-
+#include "sensesp.h"
 #include "sensesp/sensors/sensor.h"
 
 namespace sensesp::onewire {
@@ -31,10 +29,11 @@ typedef std::array<uint8_t, 8> OWDevAddr;
  **/
 class DallasTemperatureSensors : public sensesp::Sensor<float> {
  public:
-  DallasTemperatureSensors(int pin, String config_path="");
+  DallasTemperatureSensors(int pin, String config_path = "");
   bool register_address(const OWDevAddr& addr);
   bool get_next_address(OWDevAddr* addr);
   DSTherm get_dallas_driver() { return DSTherm{*onewire_}; }
+
  private:
   OneWireNg* onewire_;
   std::set<OWDevAddr> known_addresses_;
@@ -57,13 +56,14 @@ class DallasTemperatureSensors : public sensesp::Sensor<float> {
  * it will keep reading that sensor (by its unique hardware address) unless you
  * change the address in the Config UI.
  *
- * @see https://github.com/SignalK/SensESP/tree/master/examples/thermocouple_temperature_sensor
+ * @see
+ *https://github.com/SignalK/SensESP/tree/master/examples/thermocouple_temperature_sensor
  *
  * @param dts Pointer to an instance of a DallasTemperatureSensors class.
  *
- * @param read_delay How often to read the temperature. It takes up to 750 ms for the data
- * to be read by the chip, so this parameter can't be less than 800. If you make it less than
- * 800, the program will force it to be 800. You should
+ * @param read_delay How often to read the temperature. It takes up to 750 ms
+ *for the data to be read by the chip, so this parameter can't be less than 800.
+ *If you make it less than 800, the program will force it to be 800. You should
  * probably make it 1000 (the default) or more, to be safe.
  *
  * @param config_path The path to configure the sensor address in the Config UI.
@@ -71,10 +71,9 @@ class DallasTemperatureSensors : public sensesp::Sensor<float> {
 class OneWireTemperature : public sensesp::FloatSensor {
  public:
   OneWireTemperature(DallasTemperatureSensors* dts, uint read_delay = 1000,
-                     String config_path="");
-  virtual void get_configuration(JsonObject& doc) override final;
-  virtual bool set_configuration(const JsonObject& config) override final;
-  virtual String get_config_schema() override;
+                     String config_path = "");
+  virtual bool to_json(JsonObject& doc) override final;
+  virtual bool from_json(const JsonObject& config) override final;
 
  private:
   DallasTemperatureSensors* dts_;
@@ -86,6 +85,14 @@ class OneWireTemperature : public sensesp::FloatSensor {
   void read_value();
 };
 
-} // namespace sensesp
+inline const String ConfigSchema(const OneWireTemperature& obj) {
+  return R"({"type":"object","properties":{"address":{"title":"OneWire address","type":"string"},"found":{"title":"Device found","type":"boolean","readOnly":true}}})";
+}
+
+inline bool ConfigRequiresRestart(const OneWireTemperature& obj) {
+  return true;
+}
+
+}  // namespace sensesp::onewire
 
 #endif

@@ -96,7 +96,7 @@ bool DallasTemperatureSensors::get_next_address(OWDevAddr* addr) {
 OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
                                        uint read_delay, String config_path)
     : sensesp::FloatSensor(config_path), dts_{dts}, read_delay_{read_delay} {
-  load_configuration();
+  load();
   if (address_ == null_ow_addr) {
     // previously unconfigured sensor
     bool success = dts_->get_next_address(&address_);
@@ -167,24 +167,15 @@ void OneWireTemperature::read_value() {
   this->emit(tempC + 273.15);
 }
 
-void OneWireTemperature::get_configuration(JsonObject& root) {
+bool OneWireTemperature::to_json(JsonObject& root) {
   char addr_str[24];
   owda_to_string(addr_str, address_);
   root["address"] = addr_str;
   root["found"] = found_;
+  return true;
 }
 
-static const char SCHEMA[] = R"({
-    "type": "object",
-    "properties": {
-        "address": { "title": "OneWire address", "type": "string" },
-        "found": { "title": "Device found", "type": "boolean", "readOnly": true }
-    }
-  })";
-
-String OneWireTemperature::get_config_schema() { return (SCHEMA); }
-
-bool OneWireTemperature::set_configuration(const JsonObject& config) {
+bool OneWireTemperature::from_json(const JsonObject& config) {
   if (!config["address"].is<String>()) {
     return false;
   }

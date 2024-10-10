@@ -1,5 +1,8 @@
+#include <memory>
+
 #include "sensesp/signalk/signalk_output.h"
 #include "sensesp/transforms/linear.h"
+#include "sensesp/ui/config_item.h"
 #include "sensesp_app_builder.h"
 #include "sensesp_onewire/onewire_temperature.h"
 
@@ -39,36 +42,65 @@ void setup() {
   // https://signalk.org/specification/1.4.0/doc/vesselsBranch.html
 
   // Measure coolant temperature
-  auto* coolant_temp =
-      new OneWireTemperature(dts, read_delay, "/Coolant Temperature/OneWire");
+  auto coolant_temp =
+      new OneWireTemperature(dts, read_delay, "/coolantTemperature/oneWire");
 
-  coolant_temp->connect_to(new Linear(1.0, 0.0, "/Coolant Temperature/Calibration"))
-      ->connect_to(new SKOutputFloat("propulsion.mainEngine.coolantTemperature",
-                                     "/Coolant Temperature/SK Path"));
+  ConfigItem(coolant_temp)
+      ->set_title("Coolant Temperature")
+      ->set_description("Temperature of the engine coolant")
+      ->set_sort_order(100);
+
+  auto coolant_temp_calibration =
+      new Linear(1.0, 0.0, "/coolantTemperature/linear");
+
+  ConfigItem(coolant_temp_calibration)
+      ->set_title("Coolant Temperature Calibration")
+      ->set_description("Calibration for the coolant temperature sensor")
+      ->set_sort_order(200);
+
+  auto coolant_temp_sk_output = new SKOutputFloat(
+      "propulsion.mainEngine.coolantTemperature", "/coolantTemperature/skPath");
+
+  ConfigItem(coolant_temp_sk_output)
+      ->set_title("Coolant Temperature Signal K Path")
+      ->set_description("Signal K path for the coolant temperature")
+      ->set_sort_order(300);
+
+  coolant_temp->connect_to(coolant_temp_calibration)
+      ->connect_to(coolant_temp_sk_output);
 
   // Measure exhaust temperature
   auto* exhaust_temp =
-      new OneWireTemperature(dts, read_delay, "/Exhaust Temperature/OneWire");
+      new OneWireTemperature(dts, read_delay, "/exhaustTemperature/oneWire");
+  auto* exhaust_temp_calibration =
+      new Linear(1.0, 0.0, "/exhaustTemperature/linear");
+  auto* exhaust_temp_sk_output = new SKOutputFloat(
+      "propulsion.mainEngine.exhaustTemperature", "/exhaustTemperature/skPath");
 
-  exhaust_temp->connect_to(new Linear(1.0, 0.0, "/Exhaust Temperature/Calibration"))
-      ->connect_to(new SKOutputFloat("propulsion.mainEngine.exhaustTemperature",
-                                     "/Exhaust Temperature/SK Path"));
+  exhaust_temp->connect_to(exhaust_temp_calibration)
+      ->connect_to(exhaust_temp_sk_output);
 
   // Measure temperature of 24v alternator
   auto* alt_24v_temp =
-      new OneWireTemperature(dts, read_delay, "/24V Alternator Temperature/OneWire");
+      new OneWireTemperature(dts, read_delay, "/24vAltTemperature/oneWire");
+  auto* alt_24v_temp_calibration =
+      new Linear(1.0, 0.0, "/24vAltTemperature/linear");
+  auto* alt_24v_temp_sk_output = new SKOutputFloat(
+      "electrical.alternators.24V.temperature", "/24vAltTemperature/skPath");
 
-  alt_24v_temp->connect_to(new Linear(1.0, 0.0, "/24V Alternator Temperature/Calibration"))
-      ->connect_to(new SKOutputFloat("electrical.alternators.24V.temperature",
-                                     "/24V Alternator Temperature/SK Path"));
+  alt_24v_temp->connect_to(alt_24v_temp_calibration)
+      ->connect_to(alt_24v_temp_sk_output);
 
   // Measure temperature of 12v alternator
   auto* alt_12v_temp =
-      new OneWireTemperature(dts, read_delay, "/12V Alternator Temperature/OneWire");
+      new OneWireTemperature(dts, read_delay, "/12vAltTemperature/oneWire");
+  auto* alt_12v_temp_calibration =
+      new Linear(1.0, 0.0, "/12vAltTemperature/linear");
+  auto* alt_12v_temp_sk_output = new SKOutputFloat(
+      "electrical.alternators.12V.temperature", "/12vAltTemperature/skPath");
 
-  alt_12v_temp->connect_to(new Linear(1.0, 0.0, "/12V Alternator Temperature/Calibration"))
-      ->connect_to(new SKOutputFloat("electrical.alternators.12V.temperature",
-                                     "/12V Alternator Temperature/SK Path"));
+  alt_12v_temp->connect_to(alt_12v_temp_calibration)
+      ->connect_to(alt_12v_temp_sk_output);
 }
 
 // main program loop
