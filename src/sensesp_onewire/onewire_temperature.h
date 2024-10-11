@@ -29,15 +29,21 @@ typedef std::array<uint8_t, 8> OWDevAddr;
  **/
 class DallasTemperatureSensors : public sensesp::Sensor<float> {
  public:
-  DallasTemperatureSensors(int pin, String config_path = "");
+  DallasTemperatureSensors(int pin, String config_path = "",
+                           DSTherm::Resolution resolution = DSTherm::RES_12_BIT,
+                           uint32_t conversion_delay = 750);
   bool register_address(const OWDevAddr& addr);
   bool get_next_address(OWDevAddr* addr);
   DSTherm get_dallas_driver() { return DSTherm{*onewire_}; }
+
+  uint32_t get_conversion_delay() { return conversion_delay_; }
 
  private:
   OneWireNg* onewire_;
   std::set<OWDevAddr> known_addresses_;
   std::set<OWDevAddr> registered_addresses_;
+  DSTherm::Resolution resolution_;
+  uint32_t conversion_delay_;
 };
 
 /**
@@ -70,15 +76,15 @@ class DallasTemperatureSensors : public sensesp::Sensor<float> {
  **/
 class OneWireTemperature : public sensesp::FloatSensor {
  public:
-  OneWireTemperature(DallasTemperatureSensors* dts, uint read_delay = 1000,
+  OneWireTemperature(DallasTemperatureSensors* dts, uint32_t read_delay = 1000,
                      String config_path = "");
   virtual bool to_json(JsonObject& doc) override final;
   virtual bool from_json(const JsonObject& config) override final;
 
  private:
   DallasTemperatureSensors* dts_;
-  uint conversion_delay_ = DSTherm::MAX_CONV_TIME;
-  uint read_delay_;
+  uint32_t conversion_delay_ = DSTherm::MAX_CONV_TIME;
+  uint32_t read_delay_;
   bool found_ = true;
   OWDevAddr address_ = {};
   void update();
