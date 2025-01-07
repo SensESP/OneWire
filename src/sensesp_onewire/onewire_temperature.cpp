@@ -29,11 +29,13 @@ bool string_to_owda(OWDevAddr* addr, const char* str) {
   return num_items == 8;
 }
 
-DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
+DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path, DSTherm::Resolution res)
     : Sensor(config_path) {
   onewire_ = new OneWireNg_CurrentPlatform(pin,
                                            false  // disable internal pull-up
   );
+  resolution_ = res;
+
   DSTherm drv{*onewire_};
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
@@ -60,7 +62,7 @@ DallasTemperatureSensors::DallasTemperatureSensors(int pin, String config_path)
     // Set common max. resolution (12-bits) for all handled sensors.
     // The configuration will be valid until subsequent power cut-off.
     drv.writeScratchpad(addr, 0, 0,  // disable alarm notifications
-                        DSTherm::RES_12_BIT);
+                        resolution_);
   }
 }
 
@@ -124,6 +126,7 @@ OneWireTemperature::OneWireTemperature(DallasTemperatureSensors* dts,
     }
   }
 
+  conversion_delay_ = dts_->getConversionTime();
   if (found_) {
     // read_delay must be at least a little longer than conversion_delay
     if (read_delay_ < conversion_delay_ + 50) {

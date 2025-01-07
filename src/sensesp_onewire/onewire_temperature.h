@@ -29,13 +29,15 @@ typedef std::array<uint8_t, 8> OWDevAddr;
  **/
 class DallasTemperatureSensors : public sensesp::Sensor<float> {
  public:
-  DallasTemperatureSensors(int pin, String config_path = "");
+  DallasTemperatureSensors(int pin, String config_path = "", DSTherm::Resolution res = DSTherm::RES_12_BIT);
   bool register_address(const OWDevAddr& addr);
   bool get_next_address(OWDevAddr* addr);
   DSTherm get_dallas_driver() { return DSTherm{*onewire_}; }
+  uint getConversionTime() { return get_dallas_driver().getConversionTime(resolution_); }
 
  private:
   OneWireNg* onewire_;
+  DSTherm::Resolution resolution_;
   std::set<OWDevAddr> known_addresses_;
   std::set<OWDevAddr> registered_addresses_;
 };
