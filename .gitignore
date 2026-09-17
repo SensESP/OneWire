@@ -4,3 +4,15 @@
 .vscode/launch.json
 .vscode/ipch
 managed_components/
+
+# espidf build artifacts: the generated per-env sdkconfig.
+# sdkconfig.defaults is the tracked source of truth.
+sdkconfig
+sdkconfig.*
+!sdkconfig.defaults
+!sdkconfig.defaults.*
+# PlatformIO generates these for the espidf build. src/ is the published
+# library source, so they stay untracked.
+/CMakeLists.txt
+/src/CMakeLists.txt
+/dependencies.lock
